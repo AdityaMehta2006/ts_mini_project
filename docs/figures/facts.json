@@ -1,0 +1,269 @@
+{
+  "n_daily": 2921,
+  "n_monthly": 140,
+  "date_start": "2015-01-02",
+  "date_end": "2026-08-14",
+  "first_close": 95.94,
+  "last_close": 1844.08,
+  "cagr_pct": 28.98,
+  "ann_vol_pct": 38.01,
+  "total_return_pct": 1822.0,
+  "years": 11.6,
+  "kurtosis_returns": 7.8051,
+  "skew_returns": -0.3318,
+  "sd_return_pct": 2.3942,
+  "trend_strength": 0.9905,
+  "seasonal_strength": 0.098,
+  "adf_p_level": 0.963409,
+  "kpss_p_level": 0.01,
+  "adf_p_diff": 0.0,
+  "kpss_p_diff": 0.1,
+  "integration_order": 1,
+  "tests_agree_level": true,
+  "tests_agree_diff": true,
+  "acf_band": 0.0363,
+  "n_sig_acf_level": 40,
+  "n_sig_acf_returns": 9,
+  "ljung_box_returns_p": 0.0,
+  "best_smoother": "Drift",
+  "naive_mase": 21.2481,
+  "models_beating_naive": [
+    "Holt",
+    "Holt-Winters (add)",
+    "Holt-Winters (mul)"
+  ],
+  "mase_ses": 21.2788,
+  "mape_ses": 44.6828,
+  "mase_holt": 18.6252,
+  "mape_holt": 39.1857,
+  "mase_holt_winters_add": 18.6533,
+  "mape_holt_winters_add": 39.6025,
+  "mase_holt_winters_mul": 18.7091,
+  "mape_holt_winters_mul": 39.8073,
+  "mase_naive": 21.2481,
+  "mape_naive": 44.6109,
+  "mase_drift": 18.5645,
+  "mape_drift": 39.046,
+  "mase_seasonal_naive": 22.0813,
+  "mape_seasonal_naive": 46.6812,
+  "ses_alpha": 0.9879,
+  "ses_mape": 44.6828,
+  "holt_alpha": 0.9371,
+  "holt_mape": 39.1857,
+  "hw_alpha": 1.0,
+  "hw_mape": 39.6025,
+  "hw_beta": 0.0,
+  "hw_gamma": 0.0,
+  "arima_best_order": [
+    3,
+    1,
+    3
+  ],
+  "arima_best_aic": -13539.73,
+  "arima_n_fitted": 16,
+  "random_walk_delta_aic": 36.93,
+  "random_walk_rank": 16,
+  "arima_candidates": {
+    "(3,1,3)": {
+      "aic": -13539.73,
+      "delta_aic": 0.0
+    },
+    "(1,1,3)": {
+      "aic": -13520.2,
+      "delta_aic": 19.53
+    },
+    "(0,1,3)": {
+      "aic": -13515.4,
+      "delta_aic": 24.33
+    },
+    "(1,1,0)": {
+      "aic": -13515.37,
+      "delta_aic": 24.36
+    },
+    "(0,1,1)": {
+      "aic": -13514.75,
+      "delta_aic": 24.98
+    },
+    "(1,1,1)": {
+      "aic": -13514.74,
+      "delta_aic": 24.99
+    },
+    "(2,1,0)": {
+      "aic": -13514.73,
+      "delta_aic": 25.0
+    },
+    "(3,1,0)": {
+      "aic": -13514.47,
+      "delta_aic": 25.26
+    },
+    "(0,1,2)": {
+      "aic": -13514.3,
+      "delta_aic": 25.43
+    },
+    "(1,1,2)": {
+      "aic": -13513.02,
+      "delta_aic": 26.71
+    },
+    "(2,1,1)": {
+      "aic": -13512.62,
+      "delta_aic": 27.11
+    },
+    "(3,1,1)": {
+      "aic": -13512.62,
+      "delta_aic": 27.11
+    },
+    "(2,1,2)": {
+      "aic": -13511.89,
+      "delta_aic": 27.84
+    },
+    "(2,1,3)": {
+      "aic": -13511.22,
+      "delta_aic": 28.51
+    },
+    "(3,1,2)": {
+      "aic": -13509.94,
+      "delta_aic": 29.79
+    },
+    "(0,1,0)": {
+      "aic": -13502.8,
+      "delta_aic": 36.93
+    }
+  },
+  "near_common_root": true,
+  "arima_coefficients": {
+    "ar.L1": -0.7897,
+    "ar.L2": 0.8681,
+    "ar.L3": 0.9119,
+    "ma.L1": 0.7384,
+    "ma.L2": -0.874,
+    "ma.L3": -0.852
+  },
+  "ar_root_modulus": [
+    1.0026,
+    1.0458,
+    1.0458
+  ],
+  "ma_root_modulus": [
+    1.0035,
+    1.0815,
+    1.0815
+  ],
+  "resid_burnin_value": 4.5638,
+  "resid_sd": 0.0237,
+  "resid_burnin_sigmas": 192.2,
+  "lb_p_if_burnin_kept": 0.99999,
+  "lb_p_after_trim": 0.096111,
+  "jarque_bera_p": 0.0,
+  "resid_kurtosis": 7.2615,
+  "arch_lm_p": 0.0,
+  "lb_squared_p": 0.0,
+  "backtest_origins": 74,
+  "backtest_significant_vs_naive": [],
+  "winner_by_horizon": {
+    "1": "Drift",
+    "3": "Drift",
+    "6": "Drift"
+  },
+  "mase_by_model_horizon": {
+    "ARIMA_h1": 7.1793,
+    "Holt_h1": 7.1135,
+    "Naive_h1": 7.1507,
+    "Drift_h1": 7.02,
+    "ARIMA_h3": 13.5584,
+    "Holt_h3": 13.4978,
+    "Naive_h3": 13.6342,
+    "Drift_h3": 13.2114,
+    "ARIMA_h6": 24.4833,
+    "Holt_h6": 25.6121,
+    "Naive_h6": 24.5563,
+    "Drift_h6": 23.2732
+  },
+  "pi_coverage_95": {
+    "h1": 82.4,
+    "h3": 82.4,
+    "h6": 79.7
+  },
+  "dm_pvalues": {
+    "ARIMA_h1": 0.633534,
+    "Holt_h1": 0.880397,
+    "Drift_h1": 0.506605,
+    "ARIMA_h3": 0.306771,
+    "Holt_h3": 0.888366,
+    "Drift_h3": 0.581525,
+    "ARIMA_h6": 0.235068,
+    "Holt_h6": 0.722435,
+    "Drift_h6": 0.603177
+  },
+  "mean_pi_coverage": 81.5,
+  "garch_omega": 0.0983,
+  "garch_alpha": 0.0752,
+  "garch_beta": 0.9113,
+  "garch_persistence": 0.9864,
+  "garch_half_life_days": 50.7,
+  "garch_current_vol_pct": 45.321,
+  "garch_long_run_vol_pct": 42.7148,
+  "garch_arch_absorbed": true,
+  "garch_lb_sq_p": 0.201176,
+  "option_expiry": "2026-09-18",
+  "option_spot": 1844.08,
+  "risk_free_pct": 3.697,
+  "option_n_contracts": 61,
+  "garch_vol_for_pricing_pct": 45.3,
+  "mean_implied_vol_pct": 49.2,
+  "vol_gap_pct": 3.9,
+  "atm_strike": 1840.0,
+  "atm_market": 102.85,
+  "atm_bs": 105.09,
+  "atm_diff_pct": 2.2,
+  "macro_n_obs": 2915,
+  "macro_conf_band": 0.0363,
+  "macro_leaders": [],
+  "macro_sign_flippers": [
+    "SOXX",
+    "TSM",
+    "^GSPC",
+    "NVDA",
+    "^VIX",
+    "^TNX",
+    "EURUSD=X"
+  ],
+  "macro_contemporaneous": {
+    "SOXX": 0.8237,
+    "TSM": 0.678,
+    "^GSPC": 0.6728,
+    "NVDA": 0.6304,
+    "^VIX": -0.5253,
+    "^TNX": 0.0801,
+    "EURUSD=X": 0.0068
+  },
+  "macro_best_lag_corr": {
+    "SOXX": -0.121,
+    "TSM": -0.0836,
+    "^GSPC": -0.1466,
+    "NVDA": -0.0724,
+    "^VIX": 0.069,
+    "^TNX": -0.0822,
+    "EURUSD=X": -0.0445
+  },
+  "granger_alpha": 0.01,
+  "granger_n_significant": 4,
+  "granger_significant": [
+    "SOXX",
+    "TSM",
+    "^GSPC",
+    "^TNX"
+  ],
+  "granger_pvalues": {
+    "SOXX": 0.0,
+    "^GSPC": 0.0,
+    "^TNX": 3.3e-05,
+    "TSM": 0.009995,
+    "NVDA": 0.016978,
+    "^VIX": 0.046711,
+    "EURUSD=X": 0.14957
+  },
+  "dlag_r2": 0.6795,
+  "dlag_r2_lags_only": 0.0161,
+  "dlag_lag0_coef": 0.9381,
+  "_generated": "2026-08-16 17:12"
+}

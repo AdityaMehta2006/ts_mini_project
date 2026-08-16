@@ -1,0 +1,50 @@
+# ---------------------------------------------------------------------------
+# backend/data/raw/*.csv is deliberately NOT ignored.
+#
+# data.AS_OF pins the project to one dataset so the report, the slides, the
+# figures and the dashboard all describe the same numbers. Yahoo re-adjusts the
+# whole price history for dividends and splits, so a clone that re-downloaded
+# would get a rewritten past and disagree with every number written down — the
+# exact failure the pin exists to prevent. ~2.4 MB of public market data,
+# committed on purpose. Set AS_OF = None to track live data again.
+# ---------------------------------------------------------------------------
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+*.tsbuildinfo
+*.local
+
+# Generated intermediate. REPORT.pdf and SLIDES.pdf are committed as the
+# deliverables; REPORT.html is only the step in between, and it is 1.3 MB of
+# base64 that regenerates in a second.
+docs/REPORT.html
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Tooling residue
+.remember/
+.playwright-mcp/
+.impeccable/
+.claude/
+
+# Editor and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.sw?
