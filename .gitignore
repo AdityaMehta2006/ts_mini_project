@@ -48,3 +48,11 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 *.sw?
+
+# LaTeX build artefacts from docs/FINAL_REPORT.tex (the PDF itself is kept)
+docs/*.aux
+docs/*.log
+docs/*.toc
+docs/*.lof
+docs/*.lot
+docs/*.out

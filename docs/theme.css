@@ -1,0 +1,365 @@
+/* @theme asml */
+
+/* Built on marp-core's default so the mechanics (size presets, header/footer
+   placement, pagination, KaTeX) come for free; everything visual is overridden
+   below. */
+@import 'default';
+
+/* Rasterised into the PDF/PPTX at build time, so the network is needed once and
+   never at presentation time. Every stack falls back to a face that ships with
+   Windows, so an offline build degrades instead of failing. */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Source+Serif+4:opsz,wght@8..60,400..600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --paper:    #f6f7f8;   /* cool off-white, not cream */
+  --ink:      #14181c;
+  --muted:    #79838c;
+  --rule:     #dce0e4;
+  --deep:     #14181c;
+
+  /* Two accents, strictly assigned. Amber marks the null result and carries
+     over from the report and the dashboard. Teal appears only on the volatility
+     thread, the one place this project found structure. */
+  --null:     #b26b00;
+  --signal:   #0e6e75;
+  --null-d:   #e0a63a;   /* the same two, lifted for contrast on --deep */
+  --signal-d: #5cc6cc;
+
+  --display: "Archivo", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --body:    "Source Serif 4", Georgia, Cambria, "Times New Roman", serif;
+  --mono:    "IBM Plex Mono", Consolas, "Source Code Pro", ui-monospace, monospace;
+}
+
+/* ---------------------------------------------------------------- canvas -- */
+
+section {
+  width: 1280px;
+  height: 720px;
+  padding: 58px 76px 52px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 21px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* The eyebrow. Set once per part with a spot `header` directive, so it names the
+   part and the presenter on every slide they own — which is what makes the old
+   divider slides redundant. */
+section > header {
+  position: static;
+  margin: 0 0 13px;
+  padding: 0;
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+section > footer { display: none; }
+
+section::after {
+  right: 76px;
+  bottom: 26px;
+  padding: 0;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  content: attr(data-marpit-pagination) " / " attr(data-marpit-pagination-total);
+}
+
+/* ------------------------------------------------------------- the band --- */
+/* The signature: the Bartlett band from this project's own correlogram. A
+   finding inside it is indistinguishable from noise, which is the whole result,
+   so the rule under every title is drawn as that band. */
+
+h1 {
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-family: var(--display);
+  font-weight: 700;
+  font-variation-settings: "wdth" 112, "wght" 700;
+  font-size: 37px;
+  line-height: 1.12;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+}
+
+h1::after {
+  content: "";
+  display: block;
+  height: 9px;
+  margin-top: 14px;
+  border-top: 1px solid rgba(178, 107, 0, 0.45);
+  border-bottom: 1px solid rgba(178, 107, 0, 0.45);
+  background: rgba(178, 107, 0, 0.08);
+}
+
+/* The volatility thread is the one result that breaks out of the band. */
+section.signal h1::after {
+  border-color: var(--signal);
+  background: rgba(14, 110, 117, 0.10);
+}
+
+h1 + * { margin-top: 24px; }
+
+h2 {
+  margin: 22px 0 0;
+  font-family: var(--display);
+  font-weight: 600;
+  font-variation-settings: "wdth" 108, "wght" 600;
+  font-size: 25px;
+  line-height: 1.22;
+  letter-spacing: -0.005em;
+  color: var(--null);
+}
+section.signal h2 { color: var(--signal); }
+
+p { margin: 0.66em 0; }
+strong { font-weight: 600; color: var(--ink); }
+em { font-style: italic; }
+
+ul, ol { margin: 0.4em 0; padding-left: 1.15em; }
+li { margin: 0.4em 0; }
+li::marker { color: var(--muted); }
+
+blockquote {
+  margin: 0.6em 0;
+  padding: 0 0 0 20px;
+  border-left: 2px solid var(--null);
+  color: var(--ink);
+  font-size: 23px;
+  line-height: 1.35;
+}
+blockquote::before, blockquote::after { content: none; }
+
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: rgba(20, 24, 28, 0.05);
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+.katex { font-size: 1.05em; }
+
+/* --------------------------------------------------------------- tables --- */
+/* No vertical rules, no fill: a hairline under a mono small-caps header, and
+   every figure in mono so numbers line up on the decimal. */
+
+section table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  background: none;
+}
+
+/* marp-core's default paints `section table tr` white and zebra-stripes
+   `tr:nth-child(2n)`, which was showing as a white slab behind the tables on the
+   dark verdict slides. Matching its specificity is enough — this file is
+   appended after the import, so on a tie the later rule wins. */
+section table tr,
+section table tr:nth-child(2n) {
+  background-color: transparent;
+  border-top: none;
+}
+
+section table th,
+section table td {
+  border: none;
+  padding: 6px 0;
+  background: none;
+  text-align: left;
+}
+section table th + th,
+section table td + td { padding-left: 18px; }
+
+section table th {
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+section table td { border-bottom: 1px solid var(--rule); }
+section table tr:last-child td { border-bottom: none; }
+
+section table td:not(:first-child),
+section table th:not(:first-child) { text-align: right; }
+
+/* Stacked tables in one column ran flush into each other. */
+section table + table,
+section table + p { margin-top: 15px; }
+
+/* Winning rows are already bolded in the markdown, which is enough to mark them
+   in the accent without a class Marp cannot put on a <tr>. */
+section table td strong { font-weight: 600; color: var(--null); }
+section.signal table td strong { color: var(--signal); }
+
+/* -------------------------------------------------------------- figures --- */
+
+section img {
+  display: block;
+  margin: 0 auto;
+  border: 1px solid var(--rule);
+  background: #fff;
+}
+
+/* ------------------------------------------------------------ utilities --- */
+
+.cols {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 32px;
+  align-items: center;
+}
+.cols.even { grid-template-columns: 1fr 1fr; }
+.cols > div > :first-child { margin-top: 0; }
+.cols > div > :last-child { margin-bottom: 0; }
+
+.stat {
+  margin: 18px 0 4px;
+  font-family: var(--mono);
+  font-size: 58px;
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  color: var(--null);
+}
+section.signal .stat { color: var(--signal); }
+
+.label {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.note {
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------- dark slides --- */
+
+section.title,
+section.verdict {
+  background: var(--deep);
+  color: #f2f4f5;
+  justify-content: center;
+}
+
+section.title > header,
+section.verdict > header { display: none; }
+
+section.title::after { display: none; }
+section.verdict::after { color: rgba(255, 255, 255, 0.34); }
+
+section.title h1,
+section.verdict h1 { color: #fff; }
+
+section.title strong { color: #fff; }
+
+/* Title. Opens with the same band the deck goes on to argue with. */
+section.title { padding: 62px 90px; }
+section.title h1 {
+  font-size: 56px;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  font-variation-settings: "wdth" 108, "wght" 700;
+}
+section.title h1::after {
+  height: 11px;
+  margin-top: 24px;
+  border-color: rgba(224, 166, 58, 0.45);
+  background: rgba(224, 166, 58, 0.06);
+}
+section.title .epigraph {
+  margin: 22px 0 0;
+  max-width: 34ch;
+  font-size: 21px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.78);
+}
+section.title .byline {
+  margin-top: 26px;
+  font-family: var(--mono);
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.72);
+}
+section.title .repo {
+  margin-top: 9px;
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--null-d);
+}
+
+/* Verdicts. The statement is boxed inside the band like every other finding —
+   except the volatility one, which breaks out of the top. */
+
+section.verdict { padding: 58px 92px; }
+section.verdict h1 {
+  max-width: 27ch;
+  font-size: 41px;
+  line-height: 1.18;
+}
+section.verdict h1::before,
+section.verdict h1::after {
+  content: "";
+  display: block;
+  height: 11px;
+  border-top: 1px solid rgba(224, 166, 58, 0.45);
+  border-bottom: 1px solid rgba(224, 166, 58, 0.45);
+  background: rgba(224, 166, 58, 0.06);
+}
+section.verdict h1::before { margin: 0 0 20px; }
+section.verdict h1::after { margin: 20px 0 0; }
+
+section.verdict.signal h1::before { display: none; }
+section.verdict.signal h1::after {
+  border-color: rgba(92, 198, 204, 0.55);
+  background: rgba(92, 198, 204, 0.08);
+}
+
+section.verdict h2 { color: var(--null-d); }
+section.verdict.signal h2 { color: var(--signal-d); }
+section.verdict strong { color: #fff; }
+section.verdict .stat { color: var(--null-d); }
+section.verdict.signal .stat { color: var(--signal-d); }
+section.verdict .note,
+section.verdict .label { color: rgba(255, 255, 255, 0.55); }
+section.verdict table th {
+  color: rgba(255, 255, 255, 0.5);
+  border-bottom-color: rgba(255, 255, 255, 0.45);
+}
+section.verdict table td { border-bottom-color: rgba(255, 255, 255, 0.13); }
+section.verdict table td strong { color: var(--null-d); }
+section.verdict.signal table td strong { color: var(--signal-d); }
+section.verdict code { background: rgba(255, 255, 255, 0.1); }
+section.verdict .repo {
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--null-d);
+}

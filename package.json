@@ -11,6 +11,8 @@
     "check-facts": "python docs/check_facts.py",
     "report": "python docs/build_report.py",
     "report:pdf": "python docs/build_report.py --pdf",
-    "slides": "npx --yes @marp-team/marp-cli docs/SLIDES.md -o docs/SLIDES.pdf --allow-local-files"
+    "slides": "npx --yes @marp-team/marp-cli docs/SLIDES.md --allow-local-files --theme docs/theme.css -o docs/SLIDES.pdf",
+    "slides:pptx": "npx --yes @marp-team/marp-cli docs/SLIDES.md --allow-local-files --theme docs/theme.css -o docs/SLIDES.pptx",
+    "report:christ": "cd docs && xelatex -interaction=nonstopmode FINAL_REPORT.tex && xelatex -interaction=nonstopmode FINAL_REPORT.tex"
   }
 }

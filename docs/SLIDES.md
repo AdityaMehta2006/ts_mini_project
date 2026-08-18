@@ -1,149 +1,143 @@
 ---
 marp: true
-theme: default
 paginate: true
 size: 16:9
-style: |
-  section {
-    background: #ffffff;
-    color: #1a1a1a;
-    font-size: 22px;
-    padding: 50px 60px;
-  }
-  section.part {
-    background: #16181d;
-    color: #f0f0f0;
-    justify-content: center;
-  }
-  section.part h1 { color: #d99a2b; font-size: 46px; margin-bottom: 6px; }
-  section.part h3 { color: #9aa0a6; font-weight: 400; }
-  h1 { color: #1a1a1a; font-size: 34px; border-bottom: 2px solid #d99a2b; padding-bottom: 8px; }
-  h2 { color: #b26b00; font-size: 26px; }
-  strong { color: #b26b00; }
-  table { font-size: 19px; }
-  th { background: #f2f2f2; }
-  code { background: #f2f2f2; padding: 1px 5px; }
-  .big { font-size: 40px; color: #b26b00; font-weight: 700; }
-  .note { color: #666; font-size: 18px; }
+header: 'ASML · Time Series Mini Project'
 ---
 
-<!-- _class: part -->
+<!-- _class: title -->
 
 # How Predictable Is ASML?
 
-### A Box–Jenkins audit of a single equity
+<div class="epigraph">
 
-Abhinabha Das · K Suraj Das · Akash Kumar · Ritesh KR · Aditya Mehta
+The honest deliverable is not a forecast. It is a **verdict on forecastability**.
 
-Time Series Analysis — Group Mini Project
+</div>
 
----
-
-# The question we actually asked
-
-We were asked to collect stock data, build a time series model, and forecast.
-
-Early on, one thing became clear:
-
-> The honest deliverable is not a forecast.
-> It is a **verdict on forecastability**.
-
-**Why the framing matters**
-
-- A project that *promises* forecasts and delivers noise has **failed**
-- A project that *asks whether forecasting is possible* and proves it is not has **succeeded**
-
-Same numbers. Very different scientific claim.
+<div class="byline">Abhinabha Das · K Suraj Das · Akash Kumar · Ritesh KR · Aditya Mehta</div>
+<div class="repo">github.com/AdityaMehta2006/ts_mini_project</div>
 
 ---
 
 # The data
 
-| | |
+<div class="cols even">
+<div>
+
+| Property | Value |
 |---|---|
-| Ticker | **ASML** — EUV lithography monopoly |
-| Source | Yahoo Finance via `yfinance`, adjusted |
-| Period | 2015-01-02 → 2026-08-14 (11.6 years) |
+| Ticker | **ASML** |
+| Source | Yahoo Finance, adjusted |
+| Period | 2015-01-02 → 2026-08-14 |
 | Daily observations | **2,921** |
+| Monthly observations | 140 |
+
+</div>
+<div>
+
+| Property | Value |
+|---|---|
+| First close | 95.94 |
 | Last close | **1,844.08** |
+| Total return | 1,822.0% |
 | CAGR | **28.98%** |
 | Annualised volatility | **38.01%** |
 
-Daily data for stationarity, ARIMA and volatility.
-Monthly (140 points) for decomposition and exponential smoothing.
+</div>
+</div>
+
+The EUV lithography monopoly — structurally important, and violently volatile. Daily data for stationarity, ARIMA and volatility; monthly for decomposition and smoothing.
 
 ---
 
-<!-- _class: part -->
-
-# Part 1 — Data, Decomposition & Stationarity
-
-### Abhinabha Das
-
----
+<!-- header: 'Part 01 · Abhinabha Das · Data, Decomposition & Stationarity' -->
 
 # Why we model the log price
+
+<div class="cols">
+<div>
+
+![w:600](figures/fig_data.png)
+
+</div>
+<div>
 
 ASML compounded at **28.98% a year**.
 
 Growth that fast is **multiplicative** — variance grows with the level.
 
-Logs turn multiplicative growth into additive growth *and* stabilise variance.
+Logs turn multiplicative growth into additive growth *and* stabilise variance in one step.
 
-![w:800](figures/fig_data.png)
+Returns: skew −0.33, **kurtosis 7.81** (normal = 3). Those fat tails come back twice.
 
-Returns: skew −0.33, **kurtosis 7.81** (normal = 3). Fat tails will matter twice more.
+</div>
+</div>
 
 ---
 
-# Decomposition: trend 0.99, seasonal 0.10
+# There is no calendar season in a share price
 
-![w:620](figures/fig_decompose.png)
+<div class="cols">
+<div>
 
-**There is no calendar season in a share price.**
+![w:560](figures/fig_decompose.png)
+
+</div>
+<div>
+
+| Component | Strength |
+|---|---|
+| Trend | **0.99** |
+| Seasonal | **0.10** |
+
+A seasonal strength of 0.10 means that panel is fitting noise.
 
 A negative result — and it makes a prediction: Holt-Winters' seasonal term should earn nothing. Part 2 confirms γ = 0 exactly.
+
+</div>
+</div>
 
 ---
 
 # Stationarity: two tests, opposite nulls
 
-- **ADF** H₀: unit root (non-stationary)
-- **KPSS** H₀: stationary
+<div class="cols">
+<div>
 
-| Series | ADF p | KPSS p | Verdict |
-|---|---|---|---|
-| Log price | 0.9634 | 0.0100 | Non-stationary |
-| Δ log price | < 0.0001 | 0.1000 | **Stationary** |
+![w:600](figures/fig_acf_pacf.png)
 
-Because the nulls are **opposed**, two-way agreement is far stronger than either test alone.
+</div>
+<div>
 
-## ASML log price is I(1) → d = 1
+**ADF** H₀: unit root · **KPSS** H₀: stationary
 
----
+| Series | ADF p | KPSS p |
+|---|---|---|
+| Log price | 0.9634 | 0.0100 |
+| Δ log price | **< 0.0001** | **0.1000** |
 
-# Correlogram
+Log price: **all 40** lags outside the ±0.0363 band. Returns: only **9 of 40**, none large.
 
-![w:750](figures/fig_acf_pacf.png)
+<span class="note">Ljung-Box on returns gives p < 0.0001, so returns are not *strictly* white noise. At n = 2,920 even r = 0.04 is detectable. Real, and far too small to trade.</span>
 
-- Log price: **all 40** lags outside the ±0.0363 band — no fixed mean to revert to
-- Returns: only **9 of 40**, none large
+</div>
+</div>
 
-**Honesty point:** Ljung-Box on returns gives p < 0.0001, so returns are *not* strictly white noise. At n = 2,920 even r = 0.04 is detectable. Real, but far too small to trade.
-
----
-
-<!-- _class: part -->
-
-# Part 2 — Moving Averages & Exponential Smoothing
-
-### K Suraj Das
+## Because the nulls are opposed, agreement in both directions is far stronger than either test alone — ASML log price is I(1), so d = 1
 
 ---
+
+<!-- header: 'Part 02 · K Suraj Das · Moving Averages & Exponential Smoothing' -->
 
 # The three-model ladder
 
-**SES** → level only  ·  **Holt** → + trend  ·  **Holt-Winters** → + season
+<div class="cols even">
+<div>
+
+**SES** → level only
+**Holt** → + trend
+**Holt-Winters** → + season
 
 | Model | α | β | γ | MAPE |
 |---|---|---|---|---|
@@ -151,41 +145,56 @@ Because the nulls are **opposed**, two-way agreement is far stronger than either
 | Holt | 0.9371 | 0.0000 | — | 39.19% |
 | Holt-Winters | 1.0000 | 0.0000 | 0.0000 | 39.60% |
 
+</div>
+<div>
+
 Three parameters tell the whole story:
 
-- **α ≈ 1** → the level is reset to whatever just happened → *a random walk in a costume*
-- **β = 0** → trend treated as fixed → Holt collapses onto Drift
-- **γ = 0** → no seasonality to learn → exactly as Part 1 predicted
+- **α ≈ 1** → the level is reset to whatever just happened — *a random walk in a costume*
+- **β = 0** → trend treated as fixed, so Holt collapses onto Drift
+- **γ = 0** → no seasonality to learn, exactly as Part 1 predicted
+
+</div>
+</div>
 
 ---
 
 # Nothing beats Drift
 
-![w:720](figures/fig_smoothing_errors.png)
+<div class="cols">
+<div>
 
-| Model | MASE | | Benchmark | MASE |
-|---|---|---|---|---|
-| SES | 21.279 | | Naive | 21.248 |
-| Holt | 18.625 | | **Drift** | **18.565** |
-| Holt-Winters | 18.653 | | Seasonal naive | 22.081 |
+![w:600](figures/fig_smoothing_errors.png)
 
-**Last value + average monthly change — two parameters, no fitting — wins.**
+</div>
+<div>
 
-<span class="note">MASE divides by the one-step in-sample naive error, so values > 1 are normal at a 12-step horizon. Read the ranking, not the level.</span>
+| Model | MASE | Benchmark | MASE |
+|---|---|---|---|
+| SES | 21.279 | Naive | 21.248 |
+| Holt | 18.625 | **Drift** | **18.565** |
+| Holt-Winters | 18.653 | Seasonal naive | 22.081 |
+
+**Last value plus the average monthly change — two parameters, no fitting — wins.**
+
+<span class="note">MASE divides by the one-step in-sample naive error, so values above 1 are normal at a 12-step horizon. Read the ranking, not the level.</span>
+
+</div>
+</div>
 
 ---
 
-<!-- _class: part -->
-
-# Part 3 — ARIMA & Forecast Evaluation
-
-### Akash Kumar
-
----
+<!-- header: 'Part 03 · Akash Kumar · ARIMA & Forecast Evaluation' -->
 
 # Order selection: 16 candidates by AIC
 
-![w:700](figures/fig_arima_grid.png)
+<div class="cols">
+<div>
+
+![w:600](figures/fig_arima_grid.png)
+
+</div>
+<div>
 
 | Order | AIC | ΔAIC |
 |---|---|---|
@@ -193,65 +202,112 @@ Three parameters tell the whole story:
 | (1,1,3) | −13,520.20 | 19.53 |
 | (0,1,0) random walk | −13,502.80 | **36.93** |
 
-The random walk ranks **16th of 16**. AIC *does* find real structure — this is not indecision.
+The random walk ranks **16th of 16**.
+
+AIC *does* find real structure in the differenced series — this is not a criterion unable to choose.
+
+</div>
+</div>
 
 ---
 
 # But the coefficients mislead
 
+<div class="cols even">
+<div>
+
 | Coefficient | Estimate |
 |---|---|
-| ar.L1 | **−0.8902** |
-| ma.L1 | 0.8286 |
+| ar.L1 | **−0.7897** |
+| ar.L2 | 0.8681 |
+| ar.L3 | 0.9119 |
+| ma.L1 | **0.7384** |
+| ma.L2 | −0.8740 |
+| ma.L3 | −0.8520 |
 
-All significant at 5%. Looks like strong structure.
+All six significant at 5%. It looks like strong structure.
 
-## It is not
+</div>
+<div>
 
-- AR root modulus **1.1234**
-- MA root modulus **1.0865**
+| | Smallest root modulus |
+|---|---|
+| AR(3) | **1.0026** |
+| MA(3) | **1.0035** |
 
-They differ by ~3% → the polynomials share a **near-common factor** and nearly cancel.
+Both sit almost exactly *on* the unit circle, and almost exactly on top of each other — the polynomials share a **near-common factor** and very nearly cancel.
 
-**A model can carry large, significant coefficients and still be a near-random walk.**
-Only an out-of-sample test settles it.
+A factor on both sides of the equation does no forecasting work at all.
+
+</div>
+</div>
+
+## A model can carry large, significant coefficients and still be a near-random walk. Only an out-of-sample test settles it.
 
 ---
 
 # The trap: one residual inverts every diagnostic
 
-`statsmodels` starts its filter from a diffuse prior. The first residual is the filter finding its footing — **not** a model error.
+<div class="cols even">
+<div>
 
-<div class="big">4.5638 vs σ = 0.0237 → 192.2σ</div>
+`statsmodels` starts its state-space filter from a diffuse prior. The first residual is the filter finding its footing — **not** a model error.
 
-| | Ljung-Box p |
+<div class="stat">192.2σ</div>
+<div class="label">first residual 4.5638 vs σ = 0.0237</div>
+
+</div>
+<div>
+
+| Ljung-Box | p |
 |---|---|
-| Burn-in **kept** | **0.99999** — "flawless white noise" |
-| Burn-in **trimmed** | **0.0961** — passes, but only just |
+| Burn-in **kept** | **0.99999** |
+| Burn-in **trimmed** | **0.0961** |
+
+Kept, it dominates every sum of squares that follows and the model looks like flawless white noise. Trimmed, it passes — but only just.
 
 **The whole appearance of a perfect fit rested on one observation, and nothing in the output looks wrong.**
 
-Every diagnostic in this project routes through one shared trimming helper.
+</div>
+</div>
 
 ---
 
-# Residuals, honestly
+# Residuals, and where the model genuinely fails
 
-![w:760](figures/fig_arima_resid.png)
+<div class="cols">
+<div>
+
+![w:580](figures/fig_arima_resid.png)
+
+</div>
+<div>
 
 | Test | p | Meaning |
 |---|---|---|
-| Ljung-Box (10) | 0.0961 | no autocorrelation at 5% |
-| Jarque-Bera | < 0.0001 | not normal (kurtosis 7.2615) |
-| ARCH-LM (10) | < 0.0001 | **variance is not constant** |
+| Ljung-Box (10) | 0.0961 | no autocorrelation |
+| Jarque-Bera | < 0.0001 | not normal |
+| ARCH-LM (10) | < 0.0001 | **variance not constant** |
 
-The mean model is clean — and still cannot beat naive. The other two are **findings**, and they point straight to Part 4.
+| Horizon | Coverage | Nominal |
+|---|---|---|
+| h = 1 | 82.4% | 95% |
+| h = 3 | 82.4% | 95% |
+| h = 6 | **79.7%** | 95% |
+
+Mean **81.5%** against 95% — the intervals are **too narrow**. ARIMA assumes one constant variance; ARCH-LM rejects that at p < 0.0001.
+
+</div>
+</div>
 
 ---
 
-# The headline result
+<!-- _class: verdict -->
 
-74 rolling origins, expanding window, refit every time.
+# No model beats naive at any horizon
+
+<div class="cols even">
+<div>
 
 | Model | h=1 | h=3 | h=6 |
 |---|---|---|---|
@@ -259,56 +315,34 @@ The mean model is clean — and still cannot beat naive. The other two are **fin
 | Naive | 7.151 | 13.634 | 24.556 |
 | **Drift** | **7.020** | **13.211** | **23.273** |
 
-**Diebold–Mariano p vs naive:** 0.235 → 0.888. **Not one below 0.05.**
+<span class="note">74 rolling origins, expanding window, refit every time. MASE by horizon.</span>
 
-## No model beats naive at any horizon
+</div>
+<div>
 
-Drift ranks first — but a ranking without a significant margin **is not a win**. Saying otherwise would be the easiest mistake in this project.
+**Diebold–Mariano p vs naive:** 0.235 → 0.888.
 
----
+**Not one below 0.05.**
 
-# Where the model genuinely fails
+Drift ranks first at every horizon — but a ranking without a significant margin **is not a win**, and reporting it as one would be the easiest mistake in this project.
 
-| Horizon | Coverage | Nominal |
-|---|---|---|
-| h = 1 | 82.4% | 95% |
-| h = 3 | 82.4% | 95% |
-| h = 6 | 79.7% | 95% |
-
-Mean **81.5%** against 95%. The intervals are **too narrow** — the model understates risk.
-
-**Cause:** ARIMA assumes one constant variance. ARCH-LM rejected that at p < 0.0001.
-
-Averaging volatility across calm and turbulent regimes understates risk *exactly* when it matters.
+</div>
+</div>
 
 ---
 
-# Why a null result is a strong result
+<!-- header: 'Part 04 · Ritesh KR · Volatility & Black–Scholes — beyond syllabus' -->
+<!-- _class: signal -->
 
-Four independent tools. Four different labs. One conclusion.
+# The variance, however, is forecastable
 
-1. ADF **and** KPSS agree: I(1)
-2. ACF of returns collapses immediately
-3. ARIMA's AR and MA roots nearly cancel
-4. No model beats naive out of sample (DM p ≥ 0.235)
+<div class="cols">
+<div>
 
-## This is weak-form market efficiency (Fama, 1970)
+![w:600](figures/fig_garch_vol.png)
 
-If past prices held exploitable information, trading would already have removed it.
-
-<span class="note">The failure mode we deliberately avoided: tuning until something wins. Given enough specifications, one always will.</span>
-
----
-
-<!-- _class: part -->
-
-# Part 4 — Volatility & Black–Scholes
-
-### Ritesh KR · beyond syllabus
-
----
-
-# The variance is forecastable
+</div>
+<div>
 
 $$\sigma_t^2 = \omega + \alpha\varepsilon_{t-1}^2 + \beta\sigma_{t-1}^2$$
 
@@ -317,155 +351,173 @@ $$\sigma_t^2 = \omega + \alpha\varepsilon_{t-1}^2 + \beta\sigma_{t-1}^2$$
 | α (shock) | 0.0752 |
 | β (persistence) | 0.9113 |
 | **α + β** | **0.9864** |
-| Half-life | **50.7 trading days** |
-
-![w:640](figures/fig_garch_vol.png)
+| Half-life | **50.7 days** |
 
 Ljung-Box on squared standardised residuals: **p = 0.2012** → ARCH fully absorbed.
 
----
-
-# The central contrast
-
-<div class="big">We cannot say where ASML is going.<br>We can say how rough the ride will be.</div>
-
-- **Mean**: unforecastable — 74 origins, no significant edge over naive
-- **Variance**: strongly forecastable — persistence 0.9864, half-life 50.7 days
-
-The same data supports both claims. They are not in tension: returns are unpredictable in *direction*, highly structured in *magnitude*.
+</div>
+</div>
 
 ---
+
+<!-- _class: verdict signal -->
+
+# We cannot say where ASML is going. We can say how rough the ride will be.
+
+- **Mean** — unforecastable. 74 origins, no significant edge over naive.
+- **Variance** — strongly forecastable. Persistence 0.9864, half-life 50.7 days.
+
+The same data supports both claims, and they are not in tension: returns are unpredictable in *direction* and highly structured in *magnitude*.
+
+---
+
+<!-- _class: signal -->
 
 # Black–Scholes against a live market
 
-61 near-the-money calls, expiry **2026-09-18**, r = 3.697%
+<div class="cols">
+<div>
+
+![w:600](figures/fig_options.png)
+
+</div>
+<div>
+
+61 near-the-money calls, expiry 2026-09-18, r = 3.697%
 
 | | |
 |---|---|
 | Spot | 1,844.08 |
 | ATM strike | 1,840 |
 | Market mid | **102.85** |
-| Black–Scholes @ GARCH σ | **105.09** (+2.2%) |
-| Market implied vol | 49.2% |
+| Black–Scholes @ GARCH σ | **105.09** |
+| Implied vol | 49.2% |
 | GARCH vol | 45.3% |
-| **Gap** | **+3.9 points** |
+| **Gap** | **+3.9 pts** |
 
-The market charges **more** volatility than history justifies → variance risk premium.
+Black–Scholes assumes **one volatility for every strike**; implied vol visibly **curves**. Both departures trace to the constant-Gaussian assumption Part 3 had already rejected.
 
----
-
-# The smile: Black–Scholes' second failure
-
-![w:820](figures/fig_options.png)
-
-Black–Scholes assumes **one volatility for every strike**. Implied volatility visibly **curves**.
-
-Both departures trace to the same wrong assumption — constant Gaussian volatility — that Part 3's ARCH test and kurtosis of 7.58 had already rejected.
+</div>
+</div>
 
 ---
 
-<!-- _class: part -->
-
-# Part 5 — Macro-Factor Lag Analysis
-
-### Aditya Mehta · beyond syllabus
-
----
+<!-- header: 'Part 05 · Aditya Mehta · Macro-Factor Lag Analysis — beyond syllabus' -->
 
 # If ASML can't predict itself, can anything else?
 
-Seven factors, 2,915 common trading days.
+<div class="cols">
+<div>
 
-| Factor | Same day | Best lead (+1) | Ratio |
-|---|---|---|---|
-| **SOXX** | **0.8237** | −0.1210 | 0.15 |
-| TSM | 0.6780 | −0.0836 | 0.12 |
-| ^GSPC | 0.6728 | −0.1466 | 0.22 |
-| ^VIX | −0.5253 | 0.0690 | 0.13 |
+![w:620](figures/fig_macro_ccf.png)
 
-A correlation of **0.82** looks like an opportunity — until you notice *when* it exists.
+</div>
+<div>
 
----
+| Factor | Same day | Lead (+1) |
+|---|---|---|
+| **SOXX** | **0.8237** | −0.1210 |
+| TSM | 0.6780 | −0.0836 |
+| ^GSPC | 0.6728 | −0.1466 |
+| ^VIX | −0.5253 | 0.0690 |
 
-# A spike at zero, and nothing either side
+Seven factors, 2,915 common trading days. A tall spike at lag 0 and near-flat ground either side.
 
-![w:800](figures/fig_macro_ccf.png)
+**ASML moves *with* the semiconductor complex, not *after* it.** The lag-1 values are **negative** — reversal and bid-ask bounce, not prediction. A true leader would keep its sign.
 
-**ASML moves *with* the semiconductor complex, not *after* it.**
-
-Note the lag-1 values are **negative** — the opposite sign to lag 0. That is reversal and bid-ask bounce, not prediction. A true leader would keep the same sign.
+</div>
+</div>
 
 ---
 
 # Quantifying it: one variable carries everything
 
-![w:620](figures/fig_macro_dlag.png)
+<div class="cols">
+<div>
+
+![w:560](figures/fig_macro_dlag.png)
+
+</div>
+<div>
 
 | Specification | R² |
 |---|---|
 | With the same-day term | **0.6795** |
-| Lags only — what a forecaster could use | **0.0161** |
+| Lags only — all a forecaster has | **0.0161** |
 
-## Removing the one variable you can't know in advance destroys 97.6% of the explanatory power
+A correlation of 0.82 looks like an opportunity, until you notice *when* it exists.
 
-High correlation and zero predictability coexist comfortably.
+</div>
+</div>
+
+## Removing the one variable you cannot know in advance destroys 97.6% of the explanatory power
 
 ---
 
 # Granger: reporting the awkward result
 
-Lags 1–5, Bonferroni threshold α = 0.01.
+Lags 1–5 per factor, Bonferroni threshold α = 0.01.
 
-**Four factors are significant: SOXX, TSM, ^GSPC, ^TNX.**
+**Four factors are significant: SOXX, TSM, ^GSPC, ^TNX.** This appears to contradict the section. It does not:
 
-This appears to contradict the section. It does not:
+1. **Significance ≠ usefulness.** At n = 2,915 a test detects effects explaining well under 1% of variance — precisely what the lags-only R² of 0.0161 measures directly.
+2. **Part 3 already showed** what becomes of small in-sample effects out of sample.
 
-1. **Significance ≠ usefulness.** At n = 2,915 a test detects effects explaining < 1% of variance — precisely what the R² above measures.
-2. **Part 3 already showed** what happens to small in-sample effects out of sample.
-
-Granger causality is a claim about **forecast improvement**, not cause. For a chip-equipment maker and a semiconductor index, a **common driver** is by far the likeliest explanation.
+Granger causality is a claim about **forecast improvement**, not about cause. For a chip-equipment maker and a semiconductor index, a **common driver** is by far the likeliest explanation.
 
 ---
 
-<!-- _class: part -->
-
-# Conclusion
-
----
+<!-- header: 'Conclusion · Aditya Mehta' -->
 
 # What we found
 
+<div class="cols even">
+<div>
+
 **The direction of ASML is not forecastable**
 
-- I(1); near-cancelling ARIMA roots; no model beats naive across 74 origins (DM p ≥ 0.235)
-- Four independent confirmations = weak-form market efficiency (Fama, 1970)
+Four independent tools, four different labs, one conclusion:
+
+1. ADF **and** KPSS agree: I(1)
+2. The ACF of returns collapses immediately
+3. ARIMA's AR and MA roots nearly cancel
+4. No model beats naive across 74 origins, DM p ≥ 0.235
+
+## This is weak-form market efficiency (Fama, 1970)
+
+</div>
+<div>
 
 **The magnitude of its moves is**
 
-- GARCH persistence 0.9864, half-life 50.7 days, ARCH fully absorbed
+GARCH persistence 0.9864, half-life 50.7 days, ARCH fully absorbed.
 
 **And we found where our own model fails**
 
-- Prediction intervals cover 81.5%, not 95% — the constant-variance assumption breaking
+Prediction intervals cover 81.5%, not 95% — the constant-variance assumption breaking in plain sight.
+
+<span class="note">The failure mode we deliberately avoided: tuning until something wins. Given enough specifications, one always will.</span>
+
+</div>
+</div>
 
 ---
 
 # Limitations & further work
 
-- Single asset, single regime (2015–2026 was one extraordinary bull run)
-- Linear models only — non-linear or regime-switching structure would be invisible
-- **SARIMA not fitted** — seasonal strength 0.098 did not justify it; the natural next step
+- Single asset, single regime — 2015–2026 was one extraordinary bull run
+- Linear models only; non-linear or regime-switching structure would be invisible
+- **SARIMA not fitted** — seasonal strength 0.098 did not justify it, and it is the natural next step
 - Daily closes hide microstructure; bid-ask bounce likely explains the negative lag-1 values
-- No transaction costs modelled
+- Live option chain reflects quotes at one moment; no transaction costs modelled
 
 **Reproducibility:** every figure and number comes from `make_figures.py`, which imports the same modules that serve the dashboard. One implementation — a slide cannot disagree with the app.
 
 ---
 
-<!-- _class: part -->
+<!-- _class: verdict -->
 
-# Thank you
+# Thank you — questions?
 
-### Questions?
-
-<span class="note">Live dashboard · 6 sections · FastAPI + React</span>
+<div class="label">Live dashboard · 6 sections · FastAPI + React</div>
+<div class="repo">github.com/AdityaMehta2006/ts_mini_project</div>

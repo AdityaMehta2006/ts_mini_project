@@ -54,8 +54,10 @@ which is the correct alarm, since the report would then need rewriting.
 python docs/figures/make_figures.py    # 14 figures + facts.json
 python docs/check_facts.py             # guard against stale prose
 npm run report                         # docs/REPORT.html
-npm run report:pdf                     # docs/REPORT.pdf  (24 pages, submission-ready)
-npm run slides                         # docs/SLIDES.pdf  (Marp; needs node, no LaTeX)
+npm run report:pdf                     # docs/REPORT.pdf        (24 pages, browser-printed)
+npm run report:christ                  # docs/FINAL_REPORT.pdf  (27 pages, CHRIST format)
+npm run slides                         # docs/SLIDES.pdf        (21 slides)
+npm run slides:pptx                    # docs/SLIDES.pptx       (same deck, for PowerPoint)
 ```
 
 `npm run report` produces a self-contained HTML file with every figure inlined as a
@@ -63,6 +65,18 @@ data URI — no pandoc, no LaTeX, no external requests. `report:pdf` then prints
 with whichever Chrome or Edge is already installed (`--headless --print-to-pdf`), so the
 PDF needs no toolchain beyond a browser. If neither browser is found it says so and leaves
 the HTML for you to print by hand; it does not fail the build.
+
+`report:christ` compiles `docs/FINAL_REPORT.tex` with xelatex — the CHRIST (Deemed to be
+University) submission format: cover page, certificate, Times New Roman at 12 pt, 1.5
+spacing, numbered figures and tables with a list of each. **The register numbers, guide
+and exam date are placeholders** — they sit in one block of `
+ewcommand`s at the top of
+the .tex, so fill them in there and nowhere else.
+
+The deck builds through Marp with the custom theme in `docs/theme.css`. `slides:pptx`
+writes a real `.pptx` that opens and presents natively in PowerPoint at 16:9; note that
+Marp renders each slide as a full-bleed image, so the text inside it is not editable.
+(Editable output needs `--pptx-editable`, which requires a LibreOffice install.)
 
 `make_figures.py` imports the same backend modules the dashboard serves from, so a
 figure in the PDF cannot disagree with the app. **No number is typed into `REPORT.md`
@@ -92,8 +106,10 @@ frontend/src/
   hooks/            stale-while-revalidate fetch
 
 docs/
-  REPORT.md         → PDF
-  SLIDES.md         → Marp deck
+  REPORT.md         → self-contained HTML / browser-printed PDF
+  FINAL_REPORT.tex  → CHRIST submission format, xelatex
+  SLIDES.md         → Marp deck, 21 slides
+  theme.css         the deck's theme
   PRESENTATION_PARTS.md   who presents what, and the likely questions
   figures/          make_figures.py, facts.json, 14 PNGs
 ```
